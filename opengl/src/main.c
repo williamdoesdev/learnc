@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include "fileio.h"
 
 // Compile either a vertex or fragment shader from source
 static unsigned int CompileShader(const char* source, unsigned int type)
@@ -107,25 +108,8 @@ int main(void)
     glEnableVertexAttribArray(0);
 
     // Define shader source
-    const char* vertexShader = 
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) in vec4 position;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "   gl_Position = position;\n"
-        "}";
-
-    const char* fragmentShader = 
-        "#version 330 core\n"
-        "\n"
-        "layout(location = 0) out vec4 color;\n"
-        "\n"
-        "void main()\n"
-        "{\n"
-        "   color = vec4(1.0, 0.0, 0.0, 1.0);\n"
-        "}";
+    const char* vertexShader = getFileString("res/shaders/triangle.vert");
+    const char* fragmentShader = getFileString("res/shaders/triangle.frag");
 
     // Create and bind shader program
     unsigned int shaderProgram = CreateShaderProgram(vertexShader, fragmentShader);

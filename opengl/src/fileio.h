@@ -1,0 +1,1 @@
+char* getFileString(const char* path);
