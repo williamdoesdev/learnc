@@ -1,4 +1,4 @@
 all: kvstore
 
-kvstore: src/kvstore.c lib/json.h
-	gcc -o kvstore src/kvstore.c -I./lib
+kvstore: src/kvstore.c
+	gcc -o kvstore src/kvstore.c -ljansson
