@@ -23,18 +23,27 @@ int main(void)
 
     if (glewInit() != GLEW_OK)
         printf("Error!");
-    
+
+    // Triangle vertex positions    
     float positions[6] = {
         -0.5f, -0.5f,
          0.0f,  0.5f,
          0.5f, -0.5f
     };
     
+    // Create vertex buffer
     unsigned int buffer;
-
     glGenBuffers(1, &buffer);
+
+    // Bind vertex buffer
     glBindBuffer(GL_ARRAY_BUFFER, buffer);
+
+    // Copy vertex positions to buffer
     glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+
+    // Define attribute for vertex positions
+    glVertexAttributePointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
+    glEnableVertexAttribArray(0);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
