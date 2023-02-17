@@ -7,6 +7,7 @@ char* getFileString(const char* path) {
     if (file == NULL) {
         printf("Error: Could not open file %s", path);
     }
+
     // Make buffer large enough to hold file
     fseek(file, 0, SEEK_END);
     long fsize = ftell(file);
