@@ -26,7 +26,7 @@ static unsigned int CompileShader(const char* source, unsigned int type)
         // Get error message
         glGetShaderInfoLog(id, length, &length, message);
         // Print error message
-        printf("Failed to compile %s shader!", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"));
+        printf("Failed to compile %s shader!\n", (type == GL_VERTEX_SHADER ? "vertex" : "fragment"));
         // Delete shader since it failed to compile
         glDeleteShader(id);
 
@@ -85,21 +85,40 @@ int main(void)
         printf("Error!");
 
     // Triangle vertex positions    
-    float positions[6] = {
+    float positions[] = {
         -0.5f, -0.5f,
-         0.0f,  0.5f,
-         0.5f, -0.5f
+         0.5f,  -0.5f,
+         0.5f, 0.5f,
+         -0.5f, 0.5f
+    };
+
+    // Create index array
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
     };
     
     // Create vertex buffer
-    unsigned int buffer;
-    glGenBuffers(1, &buffer);
+    unsigned int vertexBuffer;
+    glGenBuffers(1, &vertexBuffer);
 
     // Bind vertex buffer
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
 
     // Copy vertex positions to buffer
-    glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), positions, GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW);
+
+
+    // Create index buffer
+    unsigned int indexBuffer;
+    glGenBuffers(1, &indexBuffer);
+
+    // Bind index buffer
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
+
+    // Copy index positions to buffer
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
+
 
     // Define attribute for vertex positions
     // Basically, this defines the 'schema' of the data that we passed to the buffer above
@@ -114,6 +133,8 @@ int main(void)
     // Create and bind shader program
     unsigned int shaderProgram = CreateShaderProgram(vertexShader, fragmentShader);
     glUseProgram(shaderProgram);
+    free((void*)vertexShader);
+    free((void*)fragmentShader);
 
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -122,7 +143,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw call
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
