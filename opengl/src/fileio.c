@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 char* getFileString(const char* path) {
-    printf("hello from testing\n");
     FILE* file = fopen(path, "r");
     if (file == NULL) {
         printf("Error: Could not open file %s", path);
@@ -15,6 +14,5 @@ char* getFileString(const char* path) {
     char* buffer = malloc(fsize + 1);
     // Read file into buffer
     fread(buffer, fsize, 1, file);
-    printf("buffer is: %s\n", buffer);
     return buffer;
 };
