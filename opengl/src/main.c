@@ -2,7 +2,38 @@
 #include <GLFW/glfw3.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <assert.h>
 #include "fileio.h"
+
+#define GLWithError(x) GLClearError();\
+    x;\
+    GLCheckError(#x, __FILE__, __LINE__);
+
+static void GLClearError()
+{
+    while (glGetError() != GL_NO_ERROR);
+}
+
+static void GLCheckError(const char* currentFunction, const char* currentFile, int currentLine)
+{
+    bool isError = true;
+    bool wasError = false;
+    do {
+        GLenum error = glGetError();
+        if (error != GL_NO_ERROR)
+        {
+            printf("OpenGL error: %d\n", error);
+            printf("Function: %s\n", currentFunction);
+            printf("File: %s\n", currentFile);
+            printf("Line: %d\n", currentLine);
+            wasError = true;
+        } else {
+            isError = false;
+        }
+    } while (isError == true);
+    assert(wasError == false);
+};
 
 // Compile either a vertex or fragment shader from source
 static unsigned int CompileShader(const char* source, unsigned int type)
@@ -143,7 +174,7 @@ int main(void)
         glClear(GL_COLOR_BUFFER_BIT);
 
         // Draw call
-        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL);
+        GLWithError(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);

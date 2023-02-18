@@ -12,3 +12,6 @@ main.o: src/main.c
 
 fileio.o: src/fileio.c
 	$(CC) $(CFLAGS) -c src/fileio.c
+
+clean:
+	rm -f *.o opengl
