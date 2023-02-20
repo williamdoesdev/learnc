@@ -101,6 +101,10 @@ int main(void)
     if (!glfwInit())
         return -1;
 
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     /* Create a windowed mode window and its OpenGL context */
     window = glfwCreateWindow(640, 480, "Hello World", NULL, NULL);
     if (!window)
@@ -115,18 +119,17 @@ int main(void)
     if (glewInit() != GLEW_OK)
         printf("Error!");
 
+    // Create vao
+    unsigned int vao;
+    glGenVertexArrays(1, &vao);
+    glBindVertexArray(vao);
+
     // Triangle vertex positions    
     float positions[] = {
         -0.5f, -0.5f,
          0.5f,  -0.5f,
          0.5f, 0.5f,
          -0.5f, 0.5f
-    };
-
-    // Create index array
-    unsigned int indices[] = {
-        0, 1, 2,
-        2, 3, 0
     };
     
     // Create vertex buffer
@@ -139,6 +142,11 @@ int main(void)
     // Copy vertex positions to buffer
     glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW);
 
+    // Create index array
+    unsigned int indices[] = {
+        0, 1, 2,
+        2, 3, 0
+    };
 
     // Create index buffer
     unsigned int indexBuffer;
@@ -164,10 +172,18 @@ int main(void)
     // Create and bind shader program
     unsigned int shaderProgram = CreateShaderProgram(vertexShader, fragmentShader);
     glUseProgram(shaderProgram);
+
     free((void*)vertexShader);
     free((void*)fragmentShader);
 
     /* Loop until the user closes the window */
+
+    //Change colors over time
+    float r = 0.0f;
+    float g = 1.0f;
+    float b = 1.0f;
+    float interval = 0.01f;
+    
     while (!glfwWindowShouldClose(window))
     {
         /* Render here */
@@ -175,6 +191,16 @@ int main(void)
 
         // Draw call
         GLWithError(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, NULL));
+
+        //Change colors over time
+        if(r > 1.0f)
+            interval = -0.05f;
+        else if(r < 0.0f)
+            interval = 0.05f;
+        
+        r += interval;
+
+        glUniform4f(glGetUniformLocation(shaderProgram, "u_Color"), r, g, b, 1.0f);
 
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
