@@ -4,36 +4,11 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <assert.h>
+
 #include "fileio.h"
-
-#define GLWithError(x) GLClearError();\
-    x;\
-    GLCheckError(#x, __FILE__, __LINE__);
-
-static void GLClearError()
-{
-    while (glGetError() != GL_NO_ERROR);
-}
-
-static void GLCheckError(const char* currentFunction, const char* currentFile, int currentLine)
-{
-    bool isError = true;
-    bool wasError = false;
-    do {
-        GLenum error = glGetError();
-        if (error != GL_NO_ERROR)
-        {
-            printf("OpenGL error: %d\n", error);
-            printf("Function: %s\n", currentFunction);
-            printf("File: %s\n", currentFile);
-            printf("Line: %d\n", currentLine);
-            wasError = true;
-        } else {
-            isError = false;
-        }
-    } while (isError == true);
-    assert(wasError == false);
-};
+#include "glerror.h"
+#include "vertexbuffer.h"
+#include "indexbuffer.h"
 
 // Compile either a vertex or fragment shader from source
 static unsigned int CompileShader(const char* source, unsigned int type)
@@ -124,23 +99,18 @@ int main(void)
     glGenVertexArrays(1, &vao);
     glBindVertexArray(vao);
 
-    // Triangle vertex positions    
+    // Create vertex buffer  
     float positions[] = {
         -0.5f, -0.5f,
          0.5f,  -0.5f,
          0.5f, 0.5f,
          -0.5f, 0.5f
     };
-    
-    // Create vertex buffer
-    unsigned int vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
 
-    // Bind vertex buffer
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    VertexBuffer vertexBuffer;
+    InitVertexBuffer(&vertexBuffer, &positions, 4 * 2 * sizeof(float));
+    BindVertexBuffer(&vertexBuffer); // This isn't actually necessary, it binds when it inits
 
-    // Copy vertex positions to buffer
-    glBufferData(GL_ARRAY_BUFFER, 8 * sizeof(float), positions, GL_STATIC_DRAW);
 
     // Create index array
     unsigned int indices[] = {
@@ -148,17 +118,12 @@ int main(void)
         2, 3, 0
     };
 
-    // Create index buffer
-    unsigned int indexBuffer;
-    glGenBuffers(1, &indexBuffer);
-
-    // Bind index buffer
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indexBuffer);
-
-    // Copy index positions to buffer
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
-
-
+    IndexBuffer indexBuffer;
+    indexBuffer.rendererId = 1;
+    InitIndexBuffer(&indexBuffer, &indices, 6 * sizeof(unsigned int));
+    BindIndexBuffer(&indexBuffer); // Same
+    
+    
     // Define attribute for vertex positions
     // Basically, this defines the 'schema' of the data that we passed to the buffer above
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
