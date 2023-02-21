@@ -96,8 +96,9 @@ int main(void)
 
     // Create vao
     unsigned int vao;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
+    GLWithError(glGenVertexArrays(1, &vao));
+    GLWithError(glBindVertexArray(vao));
+
 
     // Create vertex buffer  
     float positions[] = {
@@ -109,7 +110,6 @@ int main(void)
 
     VertexBuffer vertexBuffer;
     InitVertexBuffer(&vertexBuffer, &positions, 4 * 2 * sizeof(float));
-    BindVertexBuffer(&vertexBuffer); // This isn't actually necessary, it binds when it inits
 
 
     // Create index array
@@ -121,9 +121,8 @@ int main(void)
     IndexBuffer indexBuffer;
     indexBuffer.rendererId = 1;
     InitIndexBuffer(&indexBuffer, &indices, 6 * sizeof(unsigned int));
-    BindIndexBuffer(&indexBuffer); // Same
     
-    
+
     // Define attribute for vertex positions
     // Basically, this defines the 'schema' of the data that we passed to the buffer above
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0);
